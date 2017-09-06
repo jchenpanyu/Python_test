@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Sep 06 13:43:40 2017
+
+"Python Machine Learning"
+Chapter 2
+Page: 25-32
+
+@author: vincchen
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
@@ -46,8 +57,6 @@ def plot_decision_regions(X, y, classifier, resolution=0.02):
     # plot class samples
     for idx, cl in enumerate(np.unique(y)):
         plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1], alpha=0.8, c=cmap(idx), marker=markers[idx], label=cl)
-
-
 
 
 df = pd.read_csv(r'C:\Users\vincchen\Documents\7_Coding\Python\test\data\iris.data')
