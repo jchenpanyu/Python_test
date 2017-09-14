@@ -58,7 +58,7 @@ sc.fit(X_train)
 X_train_std = sc.transform(X_train)
 X_test_std = sc.transform(X_test)
 
-X_combined_std = np.vstack((X_train_std, X_test_std))
+X_combined = np.vstack((X_train, X_test))
 y_combined = np.hstack((y_train, y_test))
 
 # train a SVM model to classify the different flowers in our Iris dataset:
@@ -66,7 +66,7 @@ tree = DecisionTreeClassifier(criterion='entropy', max_depth=3, random_state=0)
 tree.fit(X_train, y_train)
 
 plt.figure(figsize=(6, 4))
-plot_decision_regions(X_combined_std, y_combined, classifier=tree, test_idx=range(105,150))
+plot_decision_regions(X_combined, y_combined, classifier=tree, test_idx=range(105,150))
 plt.xlabel('petal length [standardized]')
 plt.ylabel('petal width [standardized]')
 plt.legend(loc='upper left')
