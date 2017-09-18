@@ -1,0 +1,174 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Sep 06 13:43:40 2017
+"Python Machine Learning"
+Chapter 5
+Page: 128-138
+@author: vincchen
+"""
+
+"""
+the first four steps of a principal component analysis (PCA):
+1 standardizing the data
+2 constructing the covariance matrix
+3 obtaining the eigenvalues and eigenvectors of the covariance matrix
+4 sorting the eigenvalues by decreasing order to rank the eigenvectors.  
+"""
+
+##  1 standardizing the data
+import pandas as pd
+df_wine = pd.read_csv(r'C:\Users\vincchen\Documents\7_Coding\Python\test\scikit/wine.data', header=None)
+
+"""
+Process the Wine data into separate training and test sets—using
+70 percent and 30 percent of the data, respectively—and standardize it to unit variance.
+"""
+from sklearn.cross_validation import train_test_split
+from sklearn.preprocessing import StandardScaler
+X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+sc = StandardScaler()
+X_train_std = sc.fit_transform(X_train)
+X_test_std = sc.fit_transform(X_test)
+
+## 2 constructing the covariance matrix
+## 3 obtaining the eigenvalues and eigenvectors of the covariance matrix
+"""
+symmetric d × d -dimensional covariance matrix, where d is the number of dimensions in the dataset,
+stores the pairwise covariances between the different features.
+
+In the case of the Wine dataset, we would obtain 13eigenvectors and
+eigenvalues from the 13×13 -dimensional covariance matrix.
+
+Using the numpy.cov function, we computed the covariance matrix of the standardized training dataset.
+use the linalg.eig function from NumPy to obtain the eigenpairs of the Wine covariance matrix:
+"""
+import numpy as np
+cov_mat = np.cov(X_train_std.T)
+eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+print('\nEigenvalues \n%s' % eigen_vals)
+
+
+"""
+Using the NumPy cumsum function, we can then calculate the cumulative sum of
+explained variances, which we will plot via matplotlib's step function:
+    
+The resulting plot indicates that the first principal component alone accounts for
+40 percent of the variance. Also, we can see that the first two principal components
+combined explain almost 60 percent of the variance in the data
+"""
+tot = sum(eigen_vals)
+var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
+cum_var_exp = np.cumsum(var_exp)
+import matplotlib.pyplot as plt
+plt.figure(figsize=(15, 6))
+plt.subplot(121)
+plt.bar(range(1,14), var_exp, alpha=0.5, align='center', label='individual explained variance')
+plt.step(range(1,14), cum_var_exp, where='mid', label='cumulative explained variance')
+plt.ylabel('Explained variance ratio')
+plt.xlabel('Principal components')
+plt.legend(loc='best')
+plt.show()
+
+
+## 4 Feature transformation
+"""
+We start by sorting the eigenpairs by decreasing order of the eigenvalues:
+"""
+eigen_pairs =[(np.abs(eigen_vals[i]), eigen_vecs[:,i]) for i in range(len(eigen_vals))]
+eigen_pairs.sort(reverse=True)
+"""
+Next, we collect the two eigenvectors that correspond to the two largest values to
+capture about 60 percent of the variance in this dataset.
+"""
+w= np.hstack((eigen_pairs[0][1][:, np.newaxis], eigen_pairs[1][1][:, np.newaxis]))
+print('Matrix W:\n',w)
+"""
+By executing the preceding code, we have created a 13×2 -dimensional projection
+matrix W from the top two eigenvectors. Using the projection matrix, we can now
+transform a sample x (represented as 1×13-dimensional row vector) onto the PCA
+subspace obtaining x' , a now two-dimensional sample vector consisting of two new features.
+
+we can transform the entire 124×13-dimensional training dataset onto the
+two principal components by calculating the matrix dot product:
+"""
+X_train_pca = X_train_std.dot(w)
+"""
+visualize the transformed Wine training set
+"""
+plt.subplot(122)
+colors = ['r', 'b', 'g']
+markers = ['s', 'x', 'o']
+for l, c, m in zip(np.unique(y_train), colors, markers):
+    plt.scatter(X_train_pca[y_train==l, 0], X_train_pca[y_train==l, 1], c=c, label=l, marker=m)
+plt.xlabel('PC 1')
+plt.ylabel('PC 2')
+plt.legend(loc='lower left')
+plt.show()
+
+
+
+"""
+Now, let's use the PCA from scikitlearn on the Wine training dataset,
+classify the transformed samples via logistic regression,
+and visualize the decision regions via the plot_decision_region function
+
+we notice that the plot below is a mirror image of the previous PCA via our step-by-step approach.
+"""
+from matplotlib.colors import ListedColormap
+def plot_decision_regions(X, y, classifier, resolution=0.02):
+    # setup marker generator and color map
+    markers = ('s', 'x', 'o', '^', 'v')
+    colors = ('red', 'blue', 'lightgreen', 'gray', 'cyan')
+    cmap = ListedColormap(colors[:len(np.unique(y))])
+    
+    # plot the decision surface
+    x1_min, x1_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    x2_min, x2_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx1, xx2 = np.meshgrid(np.arange(x1_min, x1_max, resolution), np.arange(x2_min, x2_max, resolution))
+    Z = classifier.predict(np.array([xx1.ravel(), xx2.ravel()]).T)
+    Z = Z.reshape(xx1.shape)
+    plt.contourf(xx1, xx2, Z, alpha=0.4, cmap=cmap)
+    plt.xlim(xx1.min(), xx1.max())
+    plt.ylim(xx2.min(), xx2.max())
+
+    # plot class samples
+    for idx, cl in enumerate(np.unique(y)):
+        plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1], alpha=0.8, c=cmap(idx), marker=markers[idx], label=cl)
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+lr = LogisticRegression()
+X_train_pca = pca.fit_transform(X_train_std)
+X_test_pca = pca.transform(X_test_std)
+lr.fit(X_train_pca, y_train)
+plt.figure(figsize=(15, 6))
+plt.subplot(121)
+plot_decision_regions(X_train_pca, y_train, classifier=lr)
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.legend(loc='lower left')
+plt.show()
+
+"""
+For the sake of completeness, let's plot the decision regions of the logistic regression on
+the transformed test dataset to see if it can separate the classes well:
+"""
+plt.subplot(122)
+plot_decision_regions(X_test_pca, y_test, classifier=lr)
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.legend(loc='lower left')
+plt.show()
+
+
+"""
+If we are interested in the explained variance ratios of the different principal
+components, we can simply initialize the PCA class with the n_components parameter
+set to None, so all principal components are kept and the explained variance ratio can
+then be accessed via the explained_variance_ratio_ attribute:
+"""
+pca = PCA(n_components=None)
+X_train_pca = pca.fit_transform(X_train_std)
+pca.explained_variance_ratio_
