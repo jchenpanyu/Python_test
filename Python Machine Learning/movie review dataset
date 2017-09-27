@@ -1,0 +1,6 @@
+A compressed archive of the movie review dataset (84.1 MB) can be downloaded from http://ai.stanford.edu/~amaas/data/sentiment/ as a gzip-compressed tarball archive
+
+The movie review dataset consists of 50,000 polar movie reviews that are labeled as either positive or negative; 
+here, positive means that a movie was rated with more than six stars on IMDb, and negative means that a movie was rated with fewer than five stars on IMDb. 
+In the following sections, we will learn how to extract meaningful information from a subset of these movie reviews to build a machine learning
+model that can predict whether a certain reviewer liked or disliked a movie.
