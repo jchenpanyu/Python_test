@@ -40,7 +40,7 @@ def face_crop(image, crop_size):
             #   对于图像抽取（image decimation）来说，这可能是一个更好的方法。但如果是放大图像时，它和最近邻法的效果类似。
             # 4) INTER_CUBIC - 基于4x4像素邻域的3次插值法
             # 5) INTER_LANCZOS4 - 基于8x8像素邻域的Lanczos插值
-            ratio = crop_size/L
+            ratio = float(crop_size)/L
             resize_image = cv2.resize(cropface_image, (0, 0), fx=ratio, fy=ratio, interpolation=cv2.INTER_NEAREST)
             return resize_image
     else:
