@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+"""
+Created on Sat Sep 30 11:13:06 2017
+@author: vincchen
+
+本函数用于把输入的图片(image)中，人脸部分提取出去，并把人脸的尺寸归一化到crop_size
+目前仅适用于image中只有一张或没有人脸的情况
+对于image中有多张人脸的情况，有待进一步开发
+"""
+
 import cv2
 import numpy as np
 
