@@ -22,7 +22,7 @@ def face_crop(image, crop_size):
     face = classifier.detectMultiScale(image, 1.2, 2, cv2.CASCADE_SCALE_IMAGE)
     # 判读是否有识别去人脸
     # Yes -> 对识别出来的人脸进行处理
-    # No -> 返回一个crop_size大小的0 array
+    # No -> 返回一个crop_size大小的255 array,即一张白色图片
     if len(face) > 0:
         for face_coordinate in face:
             # x, y为人脸识别框的左上角坐标
@@ -44,4 +44,4 @@ def face_crop(image, crop_size):
             resize_image = cv2.resize(cropface_image, (0, 0), fx=ratio, fy=ratio, interpolation=cv2.INTER_NEAREST)
             return resize_image
     else:
-        return np.zeros((crop_size, crop_size))
+        return np.zeros((crop_size, crop_size)) + 255
