@@ -18,7 +18,7 @@ def face_crop(image, crop_size):
     # crop_size为从image截取人脸(截取为正方形)后的缩放的尺寸，数据类型为int，例如50
     
     # 采用opencv下的人脸识别classifier
-    classifier = cv2.CascadeClassifier(r'.\opencv\haarcascade_frontalface_default.xml')
+    classifier = cv2.CascadeClassifier(r'.\haarcascade_frontalface_default.xml')
     face = classifier.detectMultiScale(image, 1.2, 2, cv2.CASCADE_SCALE_IMAGE)
     # 判读是否有识别去人脸
     # Yes -> 对识别出来的人脸进行处理
