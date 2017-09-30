@@ -3,6 +3,7 @@
 """
 Created on Sat Sep 30 11:13:06 2017
 @author: vincchen
+E-mail: vincentchan.sysu@gmail.com
 
 本函数用于把输入的图片(image)中，人脸部分提取出去，并把人脸的尺寸归一化到crop_size
 目前仅适用于image中只有一张或没有人脸的情况
