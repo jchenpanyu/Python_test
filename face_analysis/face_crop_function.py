@@ -29,7 +29,7 @@ def face_crop(image, crop_size):
             # w, h为人脸识别框的宽度，高度
             x, y, w, h = face_coordinate
             # 为保证人脸截取框为正方形，选择w, h较少的一边作为截取框边长，以防边长会溢出
-            L = np.min(w, h)    
+            L = np.min([w, h])    
             # 提取人脸部分的image
             cropface_image = image[y:y+L, x:x+L]
             # 把cropface_image resacle到crop_size
